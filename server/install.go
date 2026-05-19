@@ -396,6 +396,13 @@ func (ip *InstallationProcess) Execute() (string, error) {
 	ctx, cancel := context.WithCancel(ip.Server.Context())
 	defer cancel()
 
+	cfg := config.Get()
+
+	env := ip.Server.GetEnvironmentVariables()
+	if proxy := cfg.Installer.Proxy; proxy != "" {
+		env = append(env, "HTTP_PROXY="+proxy, "HTTPS_PROXY="+proxy)
+	}
+
 	conf := &container.Config{
 		Hostname:     "installer",
 		AttachStdout: true,
@@ -405,14 +412,13 @@ func (ip *InstallationProcess) Execute() (string, error) {
 		Tty:          true,
 		Cmd:          []string{ip.Script.Entrypoint, "/mnt/install/install.sh"},
 		Image:        ip.Script.ContainerImage,
-		Env:          ip.Server.GetEnvironmentVariables(),
+		Env:          env,
 		Labels: map[string]string{
 			"Service":       "Pterodactyl",
 			"ContainerType": "server_installer",
 		},
 	}
 
-	cfg := config.Get()
 	tmpfsSize := strconv.Itoa(int(cfg.Docker.TmpfsSize))
 	hostConf := &container.HostConfig{
 		Mounts: []mount.Mount{

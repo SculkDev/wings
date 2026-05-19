@@ -291,6 +291,15 @@ type Backups struct {
 	CompressionLevel string `default:"best_speed" yaml:"compression_level"`
 }
 
+// InstallerConfiguration defines configuration that is applied to installer
+// containers (and not to regular server containers).
+type InstallerConfiguration struct {
+	// Proxy is the HTTP(S) proxy that the installer container should route
+	// outbound traffic through. When set, it is exposed inside the installer
+	// container as the HTTP_PROXY and HTTPS_PROXY environment variables.
+	Proxy string `json:"proxy" yaml:"proxy"`
+}
+
 type Transfers struct {
 	// DownloadLimit imposes a Network I/O read limit when downloading a transfer archive.
 	//
@@ -343,9 +352,10 @@ type Configuration struct {
 	// validate against it.
 	AuthenticationToken string `json:"token" yaml:"token"`
 
-	Api    ApiConfiguration    `json:"api" yaml:"api"`
-	System SystemConfiguration `json:"system" yaml:"system"`
-	Docker DockerConfiguration `json:"docker" yaml:"docker"`
+	Api       ApiConfiguration       `json:"api" yaml:"api"`
+	System    SystemConfiguration    `json:"system" yaml:"system"`
+	Docker    DockerConfiguration    `json:"docker" yaml:"docker"`
+	Installer InstallerConfiguration `json:"installer" yaml:"installer"`
 
 	// Defines internal throttling configurations for server processes to prevent
 	// someone from running an endless loop that spams data to logs.
