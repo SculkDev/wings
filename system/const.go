@@ -1,3 +1,3 @@
 package system
 
-var Version = "1.12.1-sculk"
+var Version = "1.12.1-sclk"
